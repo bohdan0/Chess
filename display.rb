@@ -11,6 +11,7 @@ class Display
 
   def render
     while true
+      system('clear')
       show
       @cursor.get_input
     end
@@ -20,9 +21,9 @@ class Display
     @board.grid.each_with_index do |line, row_idx|
       line.each_with_index do |piece, col_idx |
         if [row_idx, col_idx] == @cursor.cursor_pos
-          print 'X'.colorize(:background => :blue) + " "
+          print piece.class.to_s.colorize(:background => :blue) + " | "
         else
-          print piece.is_a?(NullPiece) ? '0 ' : '1 '
+          print piece.class.to_s + ' | '
         end
       end
       puts
