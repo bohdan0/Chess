@@ -1,10 +1,9 @@
 require_relative 'piece'
 
 class Board
-  attr_reader :grid
+  attr_accessor :grid
   def self.set_up_board(grid)
     grid.map.with_index do |line, line_idx|
-      # line.map do |el|
       case line_idx
       when 0, 7
         create_first_line(line_idx)
@@ -12,9 +11,7 @@ class Board
         create_pawns_line(line_idx)
       else
         create_null_line
-      # [0,1,6,7].include?(line_idx) ? Piece.new : NullPiece.new
       end
-      # end
     end
   end
 
@@ -59,27 +56,29 @@ class Board
   end
 
   def self.create_pawns_line(line)
+    color = line == 1 ? :black : :white
     result = []
-    8.times { |i| result << Pawn.new([line, i], self) }
+    8.times { |i| result << Pawn.new([line, i], self, color) }
 
     result
   end
 
   def self.create_first_line(line)
+    color = line == 0 ? :black : :white
     result = []
-    result << Rook.new([line, 0], self)
-    result << Knight.new([line, 1], self)
-    result << Bishop.new([line, 2], self)
+    result << Rook.new([line, 0], self, color)
+    result << Knight.new([line, 1], self, color)
+    result << Bishop.new([line, 2], self, color)
     if line.zero?
-      result << King.new([line, 3], self)
-      result << Queen.new([line, 4], self)
+      result << King.new([line, 3], self, color)
+      result << Queen.new([line, 4], self, color)
     else
-      result << Queen.new([line, 3], self)
-      result << King.new([line, 4], self)
+      result << Queen.new([line, 3], self, color)
+      result << King.new([line, 4], self, color)
     end
-    result << Bishop.new([line, 5], self)
-    result << Knight.new([line, 6], self)
-    result << Rook.new([line, 7], self)
+    result << Bishop.new([line, 5], self, color)
+    result << Knight.new([line, 6], self, color)
+    result << Rook.new([line, 7], self, color)
 
     result
   end

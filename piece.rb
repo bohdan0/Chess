@@ -4,9 +4,12 @@ require_relative './stepping_piece.rb'
 
 class Piece
 
-  def initialize(pos, board)
+  attr_accessor :pos, :board, :color
+
+  def initialize(pos, board, color)
     @pos = pos
     @board = board
+    @color = color
   end
 
 end
@@ -20,20 +23,17 @@ end
 
 class King < Piece
   include SteppingPiece
-  POSITIONS = [
-      [- 1, - 1],
-      [- 1, 0],
-      [- 1, 1],
-      [0, - 1],
-      [0, 1],
-      [1, - 1],
-      [1, 0],
-      [1, 1]
-    ]
+  # POSITIONS = [
+  #     [- 1, - 1],
+  #     [- 1, 0],
+  #     [- 1, 1],
+  #     [0, - 1],
+  #     [0, 1],
+  #     [1, - 1],
+  #     [1, 0],
+  #     [1, 1]
+  #   ]
 
-  def move_dirs(board)
-    # moves.select { |move| board[move].is_a?(NullPiece) }
-  end
 
 end
 
@@ -53,37 +53,26 @@ end
 
 class Queen < Piece
   include SlidingPiece
-  POSITIONS = [
-      [- 1, - 1],
-      [- 1, 0],
-      [- 1, 1],
-      [0, - 1],
-      [0, 1],
-      [1, - 1],
-      [1, 0],
-      [1, 1]
-    ]
+
+    def move_dirs
+      horizontal + diagonals
+    end
+
 
 end
 
 class Bishop < Piece
   include SlidingPiece
-  # POSITIONS = [
-  #     [- 1, - 1],
-  #     [- 1, 1],
-  #     [1, - 1],
-  #     [1, 1]
-  #   ]
+  def move_dirs
+    diagonals
+  end
 end
 
 class Rook < Piece
   include SlidingPiece
-  # POSITIONS = [
-  #     [- 1, 0],
-  #     [0, - 1],
-  #     [0, 1],
-  #     [1, 0],
-  #   ]
+  def move_dirs
+    horizontal
+  end
 end
 
 class Pawn < Piece
