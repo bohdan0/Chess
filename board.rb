@@ -2,7 +2,7 @@ require_relative 'piece'
 
 class Board
   attr_accessor :grid
-  def self.set_up_board(grid)
+  def set_up_board(grid)
     grid.map.with_index do |line, line_idx|
       case line_idx
       when 0, 7
@@ -17,7 +17,7 @@ class Board
 
   def initialize
     grid = Array.new(8) { Array.new(8) }
-    @grid = Board.set_up_board(grid)
+    @grid = set_up_board(grid)
   end
 
   def [](pos)
@@ -48,14 +48,14 @@ class Board
 
   # private
 
-  def self.create_null_line
+  def create_null_line
     result = []
     8.times { result << NullPiece.instance }
 
     result
   end
 
-  def self.create_pawns_line(line)
+  def create_pawns_line(line)
     color = line == 1 ? :black : :white
     result = []
     8.times { |i| result << Pawn.new([line, i], self, color) }
@@ -63,7 +63,7 @@ class Board
     result
   end
 
-  def self.create_first_line(line)
+  def create_first_line(line)
     color = line == 0 ? :black : :white
     result = []
     result << Rook.new([line, 0], self, color)
@@ -81,6 +81,39 @@ class Board
     result << Rook.new([line, 7], self, color)
 
     result
+  end
+
+  def iteration(color, &prc)
+    (0...8).each do |row|
+      (0...8).each do |col|
+        el = self[[row, col]]
+        next if el.is_a?(NullPiece)
+        return true if prc.call(el)
+      end
+    end
+
+    false
+  end
+
+  def in_check?(color)
+    king_pos = find_king(color)
+    iteration(color) { |el| el.moves.include?(king_pos)}
+  end
+
+  def find_king(color)
+    (0...8).each do |row|
+      (0...8).each do |col|
+        el = self[[row, col]]
+        next if el.is_a?(NullPiece)
+        return [row, col] if el.is_a?(King) && el.color == color
+      end
+    end
+  end
+
+  def checkmate?(color)
+    if in_check?(color)
+      iteration(color) { |el| valid_moves }
+    end
   end
 
 end

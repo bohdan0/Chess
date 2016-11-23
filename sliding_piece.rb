@@ -11,8 +11,10 @@ module SlidingPiece
   end
 
   def rec_method(pos, dir)
+    return [] unless valid_move?(pos)
+    return [pos] if !@board[pos].is_a?(NullPiece) && @board[pos].color != @color
     next_pos = add_pos(pos, dir)
-    return [] unless valid_move?(next_pos)
+    # return [] if @board[pos].color != @color && @board[next_pos].color == @board[pos].color
     [pos] + rec_method(next_pos, dir)
   end
 
