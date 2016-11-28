@@ -29,8 +29,8 @@ module SlidingPiece
 
   def horizontal
     [
-      [- 1, 0],
-      [0, - 1],
+      [-1, 0],
+      [0, -1],
       [0, 1],
       [1, 0]
     ]
@@ -38,9 +38,9 @@ module SlidingPiece
 
   def diagonals
     [
-      [- 1, - 1],
-      [- 1, 1],
-      [1, - 1],
+      [-1, -1],
+      [-1, 1],
+      [1, -1],
       [1, 1]
     ]
   end
