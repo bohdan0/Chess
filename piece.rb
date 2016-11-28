@@ -16,32 +16,18 @@ class Piece
     moves.reject { |move| move_into_check?(move) }
   end
 
-  def move_into_check?(move)
+  def move_into_check?(next_pos)
     board_dup = Board.new
-    board_dup.grid = my_dup
+    board_dup.grid = @board.my_dup
 
-    prev = @pos
-    board_dup[move] = self
-    self.pos = move
-    board_dup[prev] = NullPiece.instance
+    piece_copy = self.copy(self.pos, board_dup, self.color)
+    prev_pos = @pos
 
-    flag = board_dup.in_check?(@color) ? true : false
-    self.pos = prev
+    board_dup[next_pos] = piece_copy
+    piece_copy.pos = next_pos
+    board_dup[prev_pos] = NullPiece.instance
 
-    flag
-  end
-
-  def my_dup(b = @board.grid)
-    result = []
-    b.each do |el|
-      if el.is_a?(Array)
-        result << my_dup(el)
-      else
-        result << el
-      end
-    end
-
-    result
+    board_dup.in_check?(@color) ? true : false
   end
 
   def to_s(uni = nil)
@@ -49,6 +35,13 @@ class Piece
     uni.encode('utf-8')
   end
 
+  def copy(pos, board, color)
+    if self.is_a?(NullPiece)
+      NullPiece.instance
+    else
+      self.class.new(pos, board, color)
+    end
+  end
 
 end
 

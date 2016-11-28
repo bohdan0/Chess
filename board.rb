@@ -48,6 +48,19 @@ class Board
 
   # private
 
+  def my_dup(b = @grid)
+    result = []
+    b.each do |el|
+      if el.is_a?(Array)
+        result << my_dup(el) # el is row
+      else
+        result << el # el is piece
+      end
+    end
+
+    result
+  end
+
   def create_null_line
     result = []
     8.times { result << NullPiece.instance }
@@ -95,7 +108,8 @@ class Board
 
   def in_check?(color)
     king_pos = find_king(color)
-    iteration(color) { |el| return true if el.moves.include?(king_pos)}
+    enemy_color = color == :black ? :white : :black
+    iteration(enemy_color) { |el| return true if el.moves.include?(king_pos)}
 
     false
   end
