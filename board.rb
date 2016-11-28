@@ -88,32 +88,30 @@ class Board
       (0...8).each do |col|
         el = self[[row, col]]
         next if el.is_a?(NullPiece)
-        return true if prc.call(el)
+        prc.call(el) if el.color == color
       end
     end
-
-    false
   end
 
   def in_check?(color)
     king_pos = find_king(color)
-    iteration(color) { |el| el.moves.include?(king_pos)}
+    iteration(color) { |el| return true if el.moves.include?(king_pos)}
+
+    false
   end
 
   def find_king(color)
-    (0...8).each do |row|
-      (0...8).each do |col|
-        el = self[[row, col]]
-        next if el.is_a?(NullPiece)
-        return [row, col] if el.is_a?(King) && el.color == color
-      end
+    iteration(color) do |el|
+      return el.pos if el.is_a?(King)
     end
   end
 
   def checkmate?(color)
     if in_check?(color)
-      iteration(color) { |el| valid_moves }
+      iteration(color) { |el| return true if el.valid_moves.empty? }
     end
+
+    false
   end
 
 end
