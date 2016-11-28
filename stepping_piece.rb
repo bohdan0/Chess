@@ -1,9 +1,8 @@
 module SteppingPiece
-require 'byebug'
+
   def moves
     result = []
     move_dirs.each do |dir|
-      # debugger
       position = add_pos(@pos, dir)
       result << position if valid_move?(position)
     end
@@ -48,6 +47,6 @@ require 'byebug'
       [1, - 2],
       [- 1, - 2],
       [- 2, - 1]
-     ]
-   end
+    ]
+  end
 end

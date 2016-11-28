@@ -75,6 +75,10 @@ end
 class Knight < Piece
   include SteppingPiece
 
+  def move_dirs
+    knight
+  end
+
   def to_s
     code = @color == :black ? "\u265E" : "\u2658"
     super(code)
