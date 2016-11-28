@@ -1,4 +1,4 @@
-require_relative 'piece'
+require_relative './piece'
 
 class Board
   attr_accessor :grid
@@ -43,6 +43,7 @@ class Board
     end
 
     self[end_pos] = self[start_pos]
+    self[end_pos].pos = end_pos
     self[start_pos] = NullPiece.instance
   end
 
@@ -82,9 +83,9 @@ class Board
     result << Rook.new([line, 0], self, color)
     result << Knight.new([line, 1], self, color)
     result << Bishop.new([line, 2], self, color)
-    if line.zero?
-      result << King.new([line, 3], self, color)
-      result << Queen.new([line, 4], self, color)
+    if color == :black
+      result << Queen.new([line, 3], self, color)
+      result << King.new([line, 4], self, color)
     else
       result << Queen.new([line, 3], self, color)
       result << King.new([line, 4], self, color)
@@ -122,10 +123,10 @@ class Board
 
   def checkmate?(color)
     if in_check?(color)
-      iteration(color) { |el| return true if el.valid_moves.empty? }
+      iteration(color) { |el| return false unless el.valid_moves.empty? }
     end
 
-    false
+    true
   end
 
 end

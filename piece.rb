@@ -131,7 +131,8 @@ class Pawn < Piece
     result += (@color == :black ? [[1, -1], [1, 1]] : [[-1, -1], [-1, 1]])
     result.reject do |move|
       att_pos = add_pos(@pos, move)
-      @board[att_pos].is_a?(NullPiece) || @board[att_pos].color == @color
+      @board.in_bounds?(att_pos) &&
+      (@board[att_pos].is_a?(NullPiece) || @board[att_pos].color == @color)
     end
   end
 
