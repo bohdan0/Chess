@@ -120,27 +120,18 @@ end
 class Pawn < Piece
   include SteppingPiece
 
-  def moves
+  def move_dirs
     result = []
-    move_dirs.each do |dir|
-      position = add_pos(@pos, dir)
-      result << position if valid_move?(position) # || attack?(position)
-    end
-
-    result
+    result << (@color == :black ? [1, 0] : [-1, 0])
+    result + attack_moves
   end
 
-  # Fix later
-  # def attack?(position)
-  #   !board[position].is_a?(NullPiece) &&
-  #   @board.in_bounds?(position) && board[position].color != @color
-  # end
-
-  def move_dirs
-    if color == :black
-      [[1, 0]]
-    else
-      [[-1, 0]]
+  def attack_moves
+    result = []
+    result += (@color == :black ? [[1, -1], [1, 1]] : [[-1, -1], [-1, 1]])
+    result.reject do |move|
+      att_pos = add_pos(@pos, move)
+      @board[att_pos].is_a?(NullPiece) || @board[att_pos].color == @color
     end
   end
 
