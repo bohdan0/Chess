@@ -67,7 +67,7 @@ class King < Piece
   end
 
   def to_s
-    code = @color == :black ? "\u2654" : "\u265A"
+    code = @color == :black ? "\u265A" : "\u2654"
     super(code)
   end
 end
