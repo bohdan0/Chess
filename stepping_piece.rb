@@ -1,5 +1,4 @@
 module SteppingPiece
-
   def moves
     result = []
     move_dirs.each do |dir|
@@ -8,10 +7,6 @@ module SteppingPiece
     end
 
     result
-  end
-
-  def add_pos(prev, dir)
-    [prev[0] + dir[0], prev[1] + dir[1]]
   end
 
   def valid_move?(move)
