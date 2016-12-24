@@ -2,8 +2,10 @@ require_relative './piece'
 
 class Board
   attr_accessor :grid
-  def set_up_board(grid)
-    grid.map.with_index do |line, line_idx|
+
+  def self.set_up_board
+    grid = Array.new(8) { Array.new(8) }
+    grid = grid.map.with_index do |line, line_idx|
       case line_idx
       when 0, 7
         create_first_line(line_idx)
@@ -13,11 +15,12 @@ class Board
         create_null_line
       end
     end
+
+    self.new(grid)
   end
 
-  def initialize
-    grid = Array.new(8) { Array.new(8) }
-    @grid = set_up_board(grid)
+  def initialize(grid)
+    @grid = grid
   end
 
   def [](pos)
@@ -31,15 +34,20 @@ class Board
   end
 
   def in_bounds?(pos)
-    pos.all? { |el| el.between?(0, 7) }
+    pos.all? { |idx| idx.between?(0, 7) }
   end
 
   def move_piece(start_pos, end_pos)
+    unless in_bounds?(end_pos)
+      raise ArgumentError.new('You\'re out of bounds')
+    end
+
     if self[start_pos].is_a?(NullPiece)
       raise ArgumentError.new('Start position empty')
     end
-    unless in_bounds?(end_pos)
-      raise ArgumentError.new('You\'re out of bounds')
+
+    if self[start_pos].color == self[end_pos].color
+      reise ArgumentError.new('Can\'t attack same color pieces')
     end
 
     self[end_pos] = self[start_pos]
@@ -63,10 +71,11 @@ class Board
   end
 
   def create_null_line
-    result = []
-    8.times { result << NullPiece.instance }
-
-    result
+    # result = []
+    # 8.times { result << NullPiece.instance }
+    #
+    # result
+    Array.new(8, NullPiece.instance)
   end
 
   def create_pawns_line(line)
@@ -79,10 +88,13 @@ class Board
 
   def create_first_line(line)
     color = line == 0 ? :black : :white
+
     result = []
+
     result << Rook.new([line, 0], self, color)
     result << Knight.new([line, 1], self, color)
     result << Bishop.new([line, 2], self, color)
+
     if color == :black
       result << Queen.new([line, 3], self, color)
       result << King.new([line, 4], self, color)
@@ -90,6 +102,7 @@ class Board
       result << Queen.new([line, 3], self, color)
       result << King.new([line, 4], self, color)
     end
+
     result << Bishop.new([line, 5], self, color)
     result << Knight.new([line, 6], self, color)
     result << Rook.new([line, 7], self, color)
