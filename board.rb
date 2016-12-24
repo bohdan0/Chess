@@ -3,24 +3,8 @@ require_relative './piece'
 class Board
   attr_accessor :grid
 
-  def self.set_up_board
-    grid = Array.new(8) { Array.new(8) }
-    grid = grid.map.with_index do |line, line_idx|
-      case line_idx
-      when 0, 7
-        create_first_line(line_idx)
-      when 1, 6
-        create_pawns_line(line_idx)
-      else
-        create_null_line
-      end
-    end
-
-    self.new(grid)
-  end
-
-  def initialize(grid)
-    @grid = grid
+  def initialize
+    @grid = set_up_board
   end
 
   def [](pos)
@@ -55,8 +39,6 @@ class Board
     self[start_pos] = NullPiece.instance
   end
 
-  # private
-
   def my_dup(b = @grid)
     result = []
     b.each do |el|
@@ -68,6 +50,22 @@ class Board
     end
 
     result
+  end
+
+  # private
+
+  def set_up_board
+    grid = Array.new(8) { Array.new(8) }
+    grid.map.with_index do |line, line_idx|
+      case line_idx
+      when 0, 7
+        create_first_line(line_idx)
+      when 1, 6
+        create_pawns_line(line_idx)
+      else
+        create_null_line
+      end
+    end
   end
 
   def create_null_line
@@ -120,18 +118,18 @@ class Board
     end
   end
 
+  def find_king(color)
+    iteration(color) do |el|
+      return el.pos if el.is_a?(King)
+    end
+  end
+
   def in_check?(color)
     king_pos = find_king(color)
     enemy_color = color == :black ? :white : :black
     iteration(enemy_color) { |el| return true if el.moves.include?(king_pos)}
 
     false
-  end
-
-  def find_king(color)
-    iteration(color) do |el|
-      return el.pos if el.is_a?(King)
-    end
   end
 
   def checkmate?(color)
