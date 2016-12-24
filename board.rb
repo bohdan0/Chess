@@ -31,7 +31,7 @@ class Board
     end
 
     if self[start_pos].color == self[end_pos].color
-      reise ArgumentError.new('Can\'t attack same color pieces')
+      raise ArgumentError.new('Can\'t attack same color pieces')
     end
 
     self[end_pos] = self[start_pos]
@@ -69,10 +69,6 @@ class Board
   end
 
   def create_null_line
-    # result = []
-    # 8.times { result << NullPiece.instance }
-    #
-    # result
     Array.new(8, NullPiece.instance)
   end
 
@@ -135,9 +131,10 @@ class Board
   def checkmate?(color)
     if in_check?(color)
       iteration(color) { |el| return false unless el.valid_moves.empty? }
+      return true
     end
 
-    true
+    false
   end
 
 end

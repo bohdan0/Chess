@@ -5,11 +5,11 @@ class Display
 
   def initialize(board)
     @board = board
-    @cursor = Cursor.new([0,0], board)
+    @cursor = Cursor.new([0, 0], board)
   end
 
   def render
-    while true
+    loop do
       system('clear')
       show
       @cursor.get_input
@@ -18,11 +18,11 @@ class Display
 
   def show
     @board.grid.each_with_index do |line, row_idx|
-      line.each_with_index do |piece, col_idx |
+      line.each_with_index do |piece, col_idx|
         if [row_idx, col_idx] == @cursor.cursor_pos
-          print piece.to_s.colorize(:background => :blue) + " | "
+          print piece.to_s.colorize(background: :blue)
         else
-          print piece.to_s + ' | '
+          print piece.to_s
         end
       end
       puts
