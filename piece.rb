@@ -3,7 +3,6 @@ require_relative './sliding_piece.rb'
 require_relative './stepping_piece.rb'
 require_relative './board.rb'
 class Piece
-
   attr_accessor :pos, :board, :color
 
   def initialize(pos, board, color)
@@ -17,30 +16,22 @@ class Piece
   end
 
   def move_into_check?(next_pos)
-    board_dup = Board.new
-    board_dup.grid = @board.my_dup
+    old_pos = @pos
+    @board.move_piece(@pos, next_pos)
+    result = @board.in_check?(@color)
+    @board.move_piece(@pos, old_pos)
+    # @board.undo
 
-    piece_copy = self.copy(self.pos, board_dup, self.color)
-    prev_pos = @pos
-
-    board_dup[next_pos] = piece_copy
-    piece_copy.pos = next_pos
-    board_dup[prev_pos] = NullPiece.instance
-
-    board_dup.in_check?(@color) ? true : false
+    result
   end
 
   def to_s(uni = nil)
-    return ' ' if uni.nil?
-    uni.encode('utf-8')
+    return '   ' if uni.nil?
+    " #{uni.encode('utf-8')} "
   end
 
-  def copy(pos, board, color)
-    if self.is_a?(NullPiece)
-      NullPiece.instance
-    else
-      self.class.new(pos, board, color)
-    end
+  def add_pos(prev, dir)
+    [prev[0] + dir[0], prev[1] + dir[1]]
   end
 
 end
@@ -122,17 +113,26 @@ class Pawn < Piece
 
   def move_dirs
     result = []
-    result << (@color == :black ? [1, 0] : [-1, 0])
-    result + attack_moves
+    if @color == :black
+      result << [1, 0] if @board[add_pos(@pos, [1, 0])].is_a?(NullPiece)
+      result << [2, 0] if @pos[0] == 1 && !result.empty? # first move
+    else
+      result << [-1, 0] if @board[add_pos(@pos, [-1, 0])].is_a?(NullPiece)
+      result << [-2, 0] if @pos[0] == 6 && !result.empty? # first move
+    end
+
+    result + attack_dirs
   end
 
-  def attack_moves
+  def attack_dirs
     result = []
     result += (@color == :black ? [[1, -1], [1, 1]] : [[-1, -1], [-1, 1]])
-    result.reject do |move|
-      att_pos = add_pos(@pos, move)
+
+    result.reject do |dir|
+      att_pos = add_pos(@pos, dir)
       @board.in_bounds?(att_pos) &&
-      (@board[att_pos].is_a?(NullPiece) || @board[att_pos].color == @color)
+      (@board[att_pos].is_a?(NullPiece) ||
+       @board[att_pos].color == @color)
     end
   end
 

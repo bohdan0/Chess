@@ -5,6 +5,7 @@ class Board
 
   def initialize
     @grid = set_up_board
+    # @moves = [];
   end
 
   def [](pos)
@@ -34,22 +35,16 @@ class Board
       raise ArgumentError.new('Can\'t attack same color pieces')
     end
 
+    # @moves << [start_pos, end_pos]
     self[end_pos] = self[start_pos]
     self[end_pos].pos = end_pos
     self[start_pos] = NullPiece.instance
   end
 
-  def my_dup(b = @grid)
-    result = []
-    b.each do |el|
-      if el.is_a?(Array)
-        result << my_dup(el) # el is row
-      else
-        result << el # el is piece
-      end
-    end
-
-    result
+  def undo
+    raise 'No more undo' if @moves.empty?
+    from, to = @moves.pop
+    move_piece(to, from)
   end
 
   # private
@@ -130,7 +125,7 @@ class Board
 
   def checkmate?(color)
     if in_check?(color)
-      iteration(color) { |el| return false unless el.valid_moves.empty? }
+      iteration(color) { |el| return false unless el.moves.empty? }
       return true
     end
 
