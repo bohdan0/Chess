@@ -2,35 +2,43 @@ require "colorize"
 require_relative "cursor"
 
 class Display
-attr_accessor :cursor, :notifications
+attr_accessor :cursor, :notifications, :current_player
 
   def initialize(board)
     @board = board
     @cursor = Cursor.new([7, 0], board)
+    @current_player = :white
     @notifications = ''
   end
 
-  def render(from = nil, current_player)
+  def render(from = nil)
     system('clear')
     puts @notifications
-    show(from, current_player)
+    show(from)
     @cursor.get_input
   end
 
-  def show(from = nil, current_player)
+  def show(from = nil)
     @board.grid.each_with_index do |line, row_idx|
       line.each_with_index do |piece, col_idx|
-        if [row_idx, col_idx] == @cursor.cursor_pos
-          print piece.to_s.colorize(background: :blue)
-        elsif from && current_player == @board[from].color &&
-              @board[from].valid_moves.include?([row_idx, col_idx])
-
-          print piece.to_s.colorize(background: :yellow)
-        else
-          print piece.to_s
-        end
+        print piece.to_s.colorize(colors(row_idx, col_idx, from))
       end
       puts
+    end
+  end
+
+  def colors(i, j, from = nil)
+    color = (@board[[i, j]].color == :white) ? :light_red : :black
+    if @cursor.cursor_pos == [i, j]
+      { background: :light_blue, color: color }
+    elsif from && @current_player == @board[from].color &&
+          @board[from].valid_moves.include?([i, j])
+
+      { background: :light_yellow, color: color }
+    elsif (i + j).even?
+      { background: :white, color: color }
+    else
+      { background: :light_grey, color: color }
     end
   end
 end

@@ -22,8 +22,8 @@ class Piece
   end
 
   def to_s(uni = nil)
-    return '| |' if uni.nil?
-    "|#{uni.encode('utf-8')}|"
+    return '  ' if uni.nil?
+    "#{uni.encode('utf-8')} "
   end
 
   def add_pos(prev, dir)
@@ -47,7 +47,7 @@ class King < Piece
   end
 
   def to_s
-    code = @color == :black ? "\u265A" : "\u2654"
+    code = "\u265A"
     super(code)
   end
 end
@@ -60,7 +60,7 @@ class Knight < Piece
   end
 
   def to_s
-    code = @color == :black ? "\u265E" : "\u2658"
+    code = "\u265E"
     super(code)
   end
 end
@@ -73,7 +73,7 @@ class Queen < Piece
   end
 
   def to_s
-    code = @color == :black ? "\u265B" : "\u2655"
+    code = "\u265B"
     super(code)
   end
 end
@@ -86,7 +86,7 @@ class Bishop < Piece
   end
 
   def to_s
-    code = @color == :black ? "\u265D" : "\u2657"
+    code = "\u265D"
     super(code)
   end
 end
@@ -99,7 +99,7 @@ class Rook < Piece
   end
 
   def to_s
-    code = @color == :black ? "\u265C" : "\u2656"
+    code = "\u265C"
     super(code)
   end
 end
@@ -133,7 +133,7 @@ class Pawn < Piece
   end
 
   def to_s
-    code = @color == :black ? "\u265F" : "\u2659"
+    code = "\u265F"
     super(code)
   end
 end

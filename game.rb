@@ -30,12 +30,12 @@ class Game
 
   def get_input
     from, to = nil, nil
-
+    @display.current_player = @current_player
     until from && to
       if from
-        to = @display.render(from, @current_player)
+        to = @display.render(from)
       else
-        from = @display.render(@current_player)
+        from = @display.render
       end
       @display.notifications = ''
     end
