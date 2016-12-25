@@ -5,7 +5,7 @@ class Board
 
   def initialize(set_up = true)
     @grid = Array.new(8) { Array.new(8, NullPiece.instance) }
-    @grid = set_up_board if set_up
+    set_up_board if set_up
   end
 
   def [](pos)
@@ -47,7 +47,7 @@ class Board
   end
 
   def set_up_board
-    @grid.map.with_index do |line, line_idx|
+    @grid = @grid.map.with_index do |_, line_idx|
       case line_idx
       when 0, 7
         create_first_line(line_idx)
@@ -65,65 +65,53 @@ class Board
 
   def create_pawns_line(line)
     color = line == 1 ? :black : :white
-    result = []
-    8.times { |i| result << Pawn.new([line, i], self, color) }
+    result = Array.new(8)
 
-    result
+    result.map.with_index { |_, i| Pawn.new([line, i], self, color) }
   end
 
   def create_first_line(line)
-    color = line == 0 ? :black : :white
+    color = line.zero? ? :black : :white
+    result = [Rook, Knight, Bishop, Queen, King, Bishop, Knight, Rook]
 
-    result = []
-
-    result << Rook.new([line, 0], self, color)
-    result << Knight.new([line, 1], self, color)
-    result << Bishop.new([line, 2], self, color)
-
-    if color == :black
-      result << Queen.new([line, 3], self, color)
-      result << King.new([line, 4], self, color)
-    else
-      result << Queen.new([line, 3], self, color)
-      result << King.new([line, 4], self, color)
+    result.map.with_index do |piece, idx|
+      piece.new([line, idx], self, color)
     end
-
-    result << Bishop.new([line, 5], self, color)
-    result << Knight.new([line, 6], self, color)
-    result << Rook.new([line, 7], self, color)
-
-    result
   end
 
-  def iteration(color, &prc)
+  def iteration
     (0...8).each do |row|
       (0...8).each do |col|
         el = self[[row, col]]
         next if el.is_a?(NullPiece)
-        prc.call(el) if el.color == color
+        yield el
       end
     end
   end
 
   def find_king(color)
-    iteration(color) do |el|
-      return el.pos if el.is_a?(King)
+    iteration do |el|
+      return el.pos if el.color == color && el.is_a?(King)
     end
   end
 
   def in_check?(color)
     king_pos = find_king(color)
     enemy_color = color == :black ? :white : :black
-    iteration(enemy_color) { |el| return true if el.moves.include?(king_pos)}
+    iteration do |el|
+      return true if el.color == enemy_color &&
+                     el.moves.include?(king_pos)
+    end
 
     false
   end
 
   def checkmate?(color)
     if in_check?(color)
-      iteration(color) do |el|
-        return false unless el.valid_moves.empty?
+      iteration do |el|
+        return false if el.color == color && !el.valid_moves.empty?
       end
+
       return true
     end
 
@@ -132,12 +120,8 @@ class Board
 
   def copy
     result = Board.new(false)
-    (0...8).each do |row|
-      (0...8).each do |col|
-        el = self[[row, col]]
-        next if el.is_a?(NullPiece)
-        result[[row, col]] = el.class.new(el.pos, result, el.color)
-      end
+    iteration do |el|
+      result[el.pos] = el.class.new(el.pos, result, el.color)
     end
 
     result

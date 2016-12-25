@@ -2,6 +2,7 @@ require 'singleton'
 require_relative './sliding_piece.rb'
 require_relative './stepping_piece.rb'
 require_relative './board.rb'
+
 class Piece
   attr_accessor :pos, :board, :color
 
@@ -29,7 +30,6 @@ class Piece
   def add_pos(prev, dir)
     [prev[0] + dir[0], prev[1] + dir[1]]
   end
-
 end
 
 class NullPiece < Piece

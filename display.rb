@@ -18,27 +18,37 @@ attr_accessor :cursor, :notifications, :current_player
     @cursor.get_input
   end
 
-  def show(from = nil)
+  def show(from)
     @board.grid.each_with_index do |line, row_idx|
       line.each_with_index do |piece, col_idx|
-        print piece.to_s.colorize(colors(row_idx, col_idx, from))
+        print piece.to_s.colorize(colors([row_idx, col_idx], from))
       end
       puts
     end
   end
 
-  def colors(i, j, from = nil)
-    color = (@board[[i, j]].color == :white) ? :light_red : :black
-    if @cursor.cursor_pos == [i, j]
+  def colors(pos, from)
+    color = @board[pos].color == :white ? :light_red : :black
+
+    if @cursor.cursor_pos == pos
       { background: :light_blue, color: color }
     elsif from && @current_player == @board[from].color &&
-          @board[from].valid_moves.include?([i, j])
+          @board[from].valid_moves.include?(pos)
 
-      { background: :light_yellow, color: color }
-    elsif (i + j).even?
+      if attack_move?(pos)
+        { background: :red, color: color }
+      else
+        { background: :light_yellow, color: color }
+      end
+    elsif (pos[0] + pos[1]).even?
       { background: :white, color: color }
     else
       { background: :light_grey, color: color }
     end
+  end
+
+  def attack_move?(pos)
+    !@board[pos].is_a?(NullPiece) &&
+    @board[pos].color != @current_player
   end
 end

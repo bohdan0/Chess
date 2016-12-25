@@ -1,6 +1,5 @@
 require_relative 'board'
 require_relative 'display'
-# require_relative 'piece'
 
 class Game
 
@@ -13,7 +12,7 @@ class Game
   def play
     until @board.checkmate?(@current_player)
       begin
-        from, to = get_input
+        from, to = user_input
         @board.move_piece(@current_player, from, to)
         toggle_players
       rescue StandardError => e
@@ -21,6 +20,7 @@ class Game
         retry
       end
     end
+
     puts "Checkmate! #{@current_player} lost!"
   end
 
@@ -28,9 +28,10 @@ class Game
     @current_player = (@current_player == :white) ? :black : :white
   end
 
-  def get_input
+  def user_input
     from, to = nil, nil
     @display.current_player = @current_player
+
     until from && to
       if from
         to = @display.render(from)
@@ -45,6 +46,5 @@ class Game
 end
 
 if __FILE__ == $PROGRAM_NAME
-  game = Game.new
-  game.play
+  Game.new.play
 end
