@@ -16,13 +16,9 @@ class Piece
   end
 
   def move_into_check?(next_pos)
-    old_pos = @pos
-    @board.move_piece(@pos, next_pos)
-    result = @board.in_check?(@color)
-    @board.move_piece(@pos, old_pos)
-    # @board.undo
-
-    result
+    copy = @board.copy
+    copy.move_piece!(@pos, next_pos)
+    copy.in_check?(@color)
   end
 
   def to_s(uni = nil)

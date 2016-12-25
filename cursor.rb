@@ -87,7 +87,7 @@ class Cursor
       update_pos(MOVES[key])
       nil
     when :ctrl_c
-      Proccess.exit(0)
+      Process.exit(0)
     end
   end
 

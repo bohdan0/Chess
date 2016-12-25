@@ -3,9 +3,9 @@ require_relative './piece'
 class Board
   attr_accessor :grid
 
-  def initialize
-    @grid = set_up_board
-    # @moves = [];
+  def initialize(set_up = true)
+    @grid = Array.new(8) { Array.new(8, NullPiece.instance) }
+    @grid = set_up_board if set_up
   end
 
   def [](pos)
@@ -23,35 +23,29 @@ class Board
   end
 
   def move_piece(start_pos, end_pos)
-    unless in_bounds?(end_pos)
-      raise ArgumentError.new('You\'re out of bounds')
+    if !in_bounds?(end_pos)
+      raise 'You\'re out of bounds'
+    elsif self[start_pos].is_a?(NullPiece)
+      raise 'Start position empty'
+    elsif self[start_pos].color == self[end_pos].color
+      raise 'Can\'t attack same color pieces'
+    elsif !self[start_pos].moves.include?(end_pos)
+      raise 'Invalid move for this piece'
+    elsif !self[start_pos].valid_moves.include?(end_pos)
+      raise 'You can\'t move into check'
     end
 
-    if self[start_pos].is_a?(NullPiece)
-      raise ArgumentError.new('Start position empty')
-    end
+    move_piece!(start_pos, end_pos)
+  end
 
-    if self[start_pos].color == self[end_pos].color
-      raise ArgumentError.new('Can\'t attack same color pieces')
-    end
-
-    # @moves << [start_pos, end_pos]
+  def move_piece!(start_pos, end_pos)
     self[end_pos] = self[start_pos]
     self[end_pos].pos = end_pos
     self[start_pos] = NullPiece.instance
   end
 
-  def undo
-    raise 'No more undo' if @moves.empty?
-    from, to = @moves.pop
-    move_piece(to, from)
-  end
-
-  # private
-
   def set_up_board
-    grid = Array.new(8) { Array.new(8) }
-    grid.map.with_index do |line, line_idx|
+    @grid.map.with_index do |line, line_idx|
       case line_idx
       when 0, 7
         create_first_line(line_idx)
@@ -130,6 +124,19 @@ class Board
     end
 
     false
+  end
+
+  def copy
+    result = Board.new(false)
+    (0...8).each do |row|
+      (0...8).each do |col|
+        el = self[[row, col]]
+        next if el.is_a?(NullPiece)
+        result[[row, col]] = el.class.new(el.pos, result, el.color)
+      end
+    end
+
+    result
   end
 
 end
