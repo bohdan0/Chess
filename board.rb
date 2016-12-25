@@ -22,11 +22,13 @@ class Board
     pos.all? { |idx| idx.between?(0, 7) }
   end
 
-  def move_piece(start_pos, end_pos)
+  def move_piece(player, start_pos, end_pos)
     if !in_bounds?(end_pos)
       raise 'You\'re out of bounds'
     elsif self[start_pos].is_a?(NullPiece)
       raise 'Start position empty'
+    elsif player != self[start_pos].color
+      raise 'Can\'t move enemie\'s piece'
     elsif self[start_pos].color == self[end_pos].color
       raise 'Can\'t attack same color pieces'
     elsif !self[start_pos].moves.include?(end_pos)
@@ -119,7 +121,9 @@ class Board
 
   def checkmate?(color)
     if in_check?(color)
-      iteration(color) { |el| return false unless el.moves.empty? }
+      iteration(color) do |el|
+        return false unless el.valid_moves.empty?
+      end
       return true
     end
 

@@ -22,8 +22,8 @@ class Piece
   end
 
   def to_s(uni = nil)
-    return '   ' if uni.nil?
-    " #{uni.encode('utf-8')} "
+    return '| |' if uni.nil?
+    "|#{uni.encode('utf-8')}|"
   end
 
   def add_pos(prev, dir)

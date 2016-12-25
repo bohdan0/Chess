@@ -14,14 +14,14 @@ class Game
     until @board.checkmate?(@current_player)
       begin
         from, to = get_input
-        @board.move_piece(from, to)
-
+        @board.move_piece(@current_player, from, to)
         toggle_players
       rescue StandardError => e
         @display.notifications = e.message
         retry
       end
     end
+    puts "Checkmate! #{@current_player} lost!"
   end
 
   def toggle_players
@@ -33,9 +33,9 @@ class Game
 
     until from && to
       if from
-        to = @display.render
+        to = @display.render(from, @current_player)
       else
-        from = @display.render
+        from = @display.render(@current_player)
       end
       @display.notifications = ''
     end
