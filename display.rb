@@ -4,10 +4,10 @@ require_relative "cursor"
 class Display
 attr_accessor :cursor, :notifications, :current_player
 
-  def initialize(board)
+  def initialize(board, current_player)
     @board = board
     @cursor = Cursor.new([7, 0], board)
-    @current_player = :white
+    @current_player = current_player
     @notifications = ''
   end
 
@@ -32,7 +32,7 @@ attr_accessor :cursor, :notifications, :current_player
 
     if @cursor.cursor_pos == pos
       { background: :light_blue, color: color }
-    elsif from && @current_player == @board[from].color &&
+    elsif from && @current_player.color  == @board[from].color &&
           @board[from].valid_moves.include?(pos)
 
       if attack_move?(pos)
@@ -49,6 +49,6 @@ attr_accessor :cursor, :notifications, :current_player
 
   def attack_move?(pos)
     !@board[pos].is_a?(NullPiece) &&
-    @board[pos].color != @current_player
+    @board[pos].color != @current_player.color 
   end
 end

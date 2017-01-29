@@ -29,12 +29,12 @@ class Board
     pos.all? { |idx| idx.between?(0, 7) }
   end
 
-  def move_piece(player, start_pos, end_pos)
+  def move_piece(color, start_pos, end_pos)
     if !in_bounds?(end_pos)
       raise 'You\'re out of bounds'
     elsif self[start_pos].is_a?(NullPiece)
       raise 'Start position empty'
-    elsif player != self[start_pos].color
+    elsif color != self[start_pos].color
       raise 'Can\'t move enemie\'s piece'
     elsif self[start_pos].color == self[end_pos].color
       raise 'Can\'t attack same color pieces'

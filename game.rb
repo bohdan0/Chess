@@ -1,19 +1,22 @@
-require_relative 'board'
 require_relative 'display'
+require_relative 'player'
+require_relative 'board'
 
 class Game
 
-  def initialize
+  def initialize(player1, player2)
     @board = Board.new
-    @display = Display.new(@board)
-    @current_player = :white
+    @player1 = player1
+    @player2 = player2
+    @current_player = @player1
+    @display = Display.new(@board, @current_player)
   end
 
   def play
-    until @board.checkmate?(@current_player)
+    until @board.checkmate?(@current_player.color)
       begin
         from, to = user_input
-        @board.move_piece(@current_player, from, to)
+        @board.move_piece(@current_player.color, from, to)
         toggle_players
       rescue StandardError => e
         @display.notifications = e.message
@@ -21,11 +24,11 @@ class Game
       end
     end
 
-    puts "Checkmate! #{@current_player} lost!"
+    puts "Checkmate! #{ @current_player.color } lost!"
   end
 
   def toggle_players
-    @current_player = (@current_player == :white) ? :black : :white
+    @current_player = @current_player == @player1 ? @player2 : @player1
   end
 
   def user_input
@@ -46,5 +49,9 @@ class Game
 end
 
 if __FILE__ == $PROGRAM_NAME
-  Game.new.play
+  player1 = Player.new(:white)
+  player2 = Player.new(:black)
+  game = Game.new(player1, player2)
+
+  game.play
 end
